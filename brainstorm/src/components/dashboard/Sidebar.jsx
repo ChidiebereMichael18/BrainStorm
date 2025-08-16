@@ -16,11 +16,13 @@ const Sidebar = ({ isOpen, onClose }) => {
   return (
     <div
       className={`
-      fixed top-0 left-0 w-50 h-full bg-transparent text-white p-4 z-50 
-      transform transition-transform duration-300 ease-in-out
-      ${isOpen ? "translate-x-0" : "-translate-x-full"}
-      lg:relative lg:translate-x-0
-    `}
+        fixed top-0 left-0 w-50 h-full
+        ${isOpen ? "bg-gray-900" : "bg-transparent"}
+        text-white p-4 z-50
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:relative lg:translate-x-0 lg:bg-transparent
+      `}
     >
       <div className="flex justify-between items-center  font-montserrat mb-4">
         {/* <div className="flex ">
