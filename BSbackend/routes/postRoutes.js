@@ -12,7 +12,7 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 
 router.get('/', getPosts);
-router.post('/', protect, createPost);
+router.post('/create', protect, createPost);
 router.get('/tag/:tag', getPostsByTag);
 router.get('/user/:userId', getPostsByUser);
 router.get('/:id', getPostById);

@@ -122,5 +122,4 @@ module.exports = {
     getPostsByUser,
     updatePost,
     deletePost,
-    applyToPost
 };
