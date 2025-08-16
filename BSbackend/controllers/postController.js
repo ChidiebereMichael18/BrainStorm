@@ -8,11 +8,11 @@ const getPosts = asyncHandler(async (req, res) => {
 });
 
 const createPost = asyncHandler(async (req, res) => {
-    const { title, description, category, teamSize, skillLevel, deadline, tags } = req.body;
+    const { title, description, category, teamSize, skillLevel, deadline, tags, contactMethod, contactInfo } = req.body;
 
-    if (!title || !description || !category) {
+    if (!title || !description || !category || !contactMethod || !contactInfo) {
         res.status(400);
-        throw new Error('Please fill required fields');
+        throw new Error('Please fill all required fields');
     }
 
     const post = await Post.create({
@@ -23,7 +23,9 @@ const createPost = asyncHandler(async (req, res) => {
         teamSize,
         skillLevel,
         deadline,
-        tags
+        tags,
+        contactMethod,
+        contactInfo
     });
 
     res.status(201).json(post);
@@ -85,6 +87,33 @@ const deletePost = asyncHandler(async (req, res) => {
     res.json({ id: req.params.id });
 });
 
+// const applyToPost = asyncHandler(async (req, res) => {
+//     const post = await Post.findById(req.params.id);
+    
+//     if (!post) {
+//         res.status(404);
+//         throw new Error('Post not found');
+//     }
+
+//     // Check if user already applied
+//     const alreadyApplied = post.applicants.find(
+//         applicant => applicant.userId.toString() === req.user.id
+//     );
+
+//     if (alreadyApplied) {
+//         res.status(400);
+//         throw new Error('Already applied to this post');
+//     }
+
+//     post.applicants.push({
+//         userId: req.user.id,
+//         status: 'pending'
+//     });
+
+//     await post.save();
+//     res.status(200).json({ message: 'Application submitted successfully' });
+// });
+
 module.exports = {
     getPosts,
     createPost,
@@ -92,5 +121,6 @@ module.exports = {
     getPostsByTag,
     getPostsByUser,
     updatePost,
-    deletePost
+    deletePost,
+    applyToPost
 };
