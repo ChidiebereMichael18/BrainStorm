@@ -1,7 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
-// import Signup from "../pages/Signup";
+import SignUpPage from "../pages/SignUp";
+import LoginPage from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import Layout from "../components/dashboard/Layout";
 import Gaming from "../pages/Gaming";
@@ -17,7 +18,8 @@ function RouterPath() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/landing" element={<LandingPage />} />
-      {/* <Route path="/signup" element={<Signup />} /> */}
+      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/login" element={<LoginPage />} />
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<Dashboard />} />
