@@ -8,7 +8,9 @@ function Development() {
       teamSize: '4 developers',
       skillLevel: 'Intermediate-Senior',
       deadline: '4 months',
-      tags: ['Next.js', 'GraphQL', 'TypeScript']
+      tags: ['Next.js', 'GraphQL', 'TypeScript'],
+      contactMethod: 'discord',
+      contactInfo: 'ecommerce_team#1234'
     },
     {
       title: 'Mobile Health App',
@@ -16,7 +18,9 @@ function Development() {
       teamSize: '3 developers needed',
       skillLevel: 'Intermediate',
       deadline: '3 months',
-      tags: ['React Native', 'Mobile', 'Healthcare']
+      tags: ['React Native', 'Mobile', 'Healthcare'],
+      contactMethod: 'email',
+      contactInfo: 'health.app@example.com'
     },
     {
       title: 'AI Chat Assistant',
@@ -24,7 +28,9 @@ function Development() {
       teamSize: '2 ML engineers',
       skillLevel: 'Advanced',
       deadline: '6 months',
-      tags: ['Python', 'AI', 'Machine Learning']
+      tags: ['Python', 'AI', 'Machine Learning'],
+      contactMethod: 'discord',
+      contactInfo: 'ai_assistant#5678'
     },
     {
       title: 'DevOps Pipeline',
@@ -32,7 +38,9 @@ function Development() {
       teamSize: '2 DevOps engineers',
       skillLevel: 'Senior',
       deadline: '2 months',
-      tags: ['DevOps', 'Docker', 'Kubernetes']
+      tags: ['DevOps', 'Docker', 'Kubernetes'],
+      contactMethod: 'email',
+      contactInfo: 'devops@example.com'
     },
     {
       title: 'Web3 DApp',
@@ -40,7 +48,9 @@ function Development() {
       teamSize: '3 developers',
       skillLevel: 'Advanced',
       deadline: '5 months',
-      tags: ['Solidity', 'Web3', 'Ethereum']
+      tags: ['Solidity', 'Web3', 'Ethereum'],
+      contactMethod: 'discord',
+      contactInfo: 'web3_team#9012'
     },
     {
       title: 'Data Analytics Dashboard',
@@ -48,9 +58,21 @@ function Development() {
       teamSize: '3-4 developers',
       skillLevel: 'Intermediate',
       deadline: '3 months',
-      tags: ['MongoDB', 'Express', 'React', 'Node']
+      tags: ['MongoDB', 'Express', 'React', 'Node'],
+      contactMethod: 'whatsapp',
+      contactInfo: '1234567890'
     }
   ];
+
+  const getContactLink = (method, info) => {
+    switch (method) {
+      case 'phone': return `tel:${info}`;
+      case 'email': return `mailto:${info}`;
+      case 'whatsapp': return `https://wa.me/${info}`;
+      case 'discord': return `discord://${info}`;
+      default: return '#';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -94,13 +116,23 @@ function Development() {
                     </span>
                   ))}
                 </div>
-              </div>
 
-              <button className="w-full bg-black/40 hover:bg-green-500/20 
-                              text-green-400 font-medium py-3 px-4
-                              transition-all duration-200 border-t border-green-900/50">
-                Join Project
-              </button>
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-400 text-sm">
+                      Contact via: <span className="text-green-400 capitalize">{project.contactMethod}</span>
+                    </div>
+                    <button
+                      onClick={() => window.open(getContactLink(project.contactMethod, project.contactInfo))}
+                      className="bg-green-500/10 hover:bg-green-500/20 
+                               text-green-400 px-4 py-2 rounded-lg text-sm 
+                               font-medium transition-colors border border-green-500/20"
+                    >
+                      Join Project
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>

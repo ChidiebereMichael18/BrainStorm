@@ -8,7 +8,9 @@ function Gaming() {
       teamSize: '5 players needed',
       skillLevel: 'Diamond+',
       deadline: '2 weeks',
-      tags: ['FPS', 'Competitive', 'Tournament']
+      tags: ['FPS', 'Competitive', 'Tournament'],
+      contactMethod: 'discord',
+      contactInfo: 'valorant_team#1234'
     },
     {
       title: 'Minecraft Build Project',
@@ -16,7 +18,9 @@ function Gaming() {
       teamSize: '3-4 builders',
       skillLevel: 'Intermediate',
       deadline: 'Ongoing',
-      tags: ['Creative', 'Building', 'Long-term']
+      tags: ['Creative', 'Building', 'Long-term'],
+      contactMethod: 'discord',
+      contactInfo: 'minecraft_builds#5678'
     },
     {
       title: 'Game Development Squad',
@@ -24,7 +28,9 @@ function Gaming() {
       teamSize: '4 developers',
       skillLevel: 'Beginner friendly',
       deadline: '3 months',
-      tags: ['Development', 'Unity', 'Indie']
+      tags: ['Development', 'Unity', 'Indie'],
+      contactMethod: 'email',
+      contactInfo: 'devsquad@example.com'
     },
     {
       title: 'League of Legends Team',
@@ -32,7 +38,9 @@ function Gaming() {
       teamSize: '2 players needed',
       skillLevel: 'Gold+',
       deadline: '1 week',
-      tags: ['MOBA', 'Team', 'Competitive']
+      tags: ['MOBA', 'Team', 'Competitive'],
+      contactMethod: 'whatsapp',
+      contactInfo: '1234567890'
     },
     {
       title: 'Fortnite Squad',
@@ -40,7 +48,9 @@ function Gaming() {
       teamSize: '3 players needed',
       skillLevel: 'Advanced',
       deadline: 'ASAP',
-      tags: ['Battle Royale', 'Competitive', 'Active']
+      tags: ['Battle Royale', 'Competitive', 'Active'],
+      contactMethod: 'phone',
+      contactInfo: '9876543210'
     },
     {
       title: 'Streaming Team',
@@ -48,9 +58,21 @@ function Gaming() {
       teamSize: '4-5 streamers',
       skillLevel: 'Any',
       deadline: 'Ongoing',
-      tags: ['Content', 'Streaming', 'Casual']
+      tags: ['Content', 'Streaming', 'Casual'],
+      contactMethod: 'discord',
+      contactInfo: 'streamteam#0001'
     }
   ];
+
+  const getContactLink = (method, info) => {
+    switch (method) {
+      case 'phone': return `tel:${info}`;
+      case 'email': return `mailto:${info}`;
+      case 'whatsapp': return `https://wa.me/${info}`;
+      case 'discord': return `discord://${info}`;
+      default: return '#';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -96,11 +118,21 @@ function Gaming() {
                 </div>
               </div>
 
-              <button className="w-full bg-black/40 hover:bg-green-500/20 
-                              text-green-400 font-medium py-3 px-4
-                              transition-all duration-200 border-t border-green-900/50">
-                Join Team
-              </button>
+              <div className="mt-4 pt-4 border-t border-gray-800">
+                <div className="flex items-center justify-between">
+                  <div className="text-gray-400 text-sm">
+                    Contact via: <span className="text-green-400 capitalize">{activity.contactMethod}</span>
+                  </div>
+                  <button
+                    onClick={() => window.open(getContactLink(activity.contactMethod, activity.contactInfo))}
+                    className="bg-green-500/10 hover:bg-green-500/20 
+                               text-green-400 px-4 py-2 rounded-lg text-sm 
+                               font-medium transition-colors border border-green-500/20"
+                  >
+                    Join Team
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -10,7 +10,9 @@ function MyPosts() {
     teamSize: '',
     skillLevel: '',
     deadline: '',
-    tags: ''
+    tags: '',
+    contactMethod: 'discord',
+    contactInfo: ''
   });
 
   const handleSubmit = (e) => {
@@ -30,7 +32,9 @@ function MyPosts() {
       teamSize: '',
       skillLevel: '',
       deadline: '',
-      tags: ''
+      tags: '',
+      contactMethod: 'discord',
+      contactInfo: ''
     });
   };
 
@@ -99,6 +103,27 @@ function MyPosts() {
                 onChange={(e) => setNewPost({...newPost, tags: e.target.value})}
                 required
               />
+              
+              <div className="flex gap-4">
+                <select
+                  className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none w-1/3"
+                  value={newPost.contactMethod}
+                  onChange={(e) => setNewPost({...newPost, contactMethod: e.target.value})}
+                >
+                  <option value="discord">Discord</option>
+                  <option value="phone">Phone</option>
+                  <option value="email">Email</option>
+                  <option value="whatsapp">WhatsApp</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Contact Information"
+                  className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none flex-1"
+                  value={newPost.contactInfo}
+                  onChange={(e) => setNewPost({...newPost, contactInfo: e.target.value})}
+                  required
+                />
+              </div>
             </div>
             <textarea
               placeholder="Description"
@@ -142,6 +167,19 @@ function MyPosts() {
                     </span>
                   ))}
                 </div>
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-400 text-sm">
+                      Contact via: <span className="text-green-400 capitalize">{post.contactMethod}</span>
+                    </div>
+                    <button
+                      onClick={() => window.open(`${getContactLink(post.contactMethod, post.contactInfo)}`)}
+                      className="bg-green-500 hover:bg-green-400 text-black px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Join Project
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -150,5 +188,21 @@ function MyPosts() {
     </div>
   );
 }
+
+// Helper function to generate contact links
+const getContactLink = (method, info) => {
+  switch (method) {
+    case 'phone':
+      return `tel:${info}`;
+    case 'email':
+      return `mailto:${info}`;
+    case 'whatsapp':
+      return `https://wa.me/${info}`;
+    case 'discord':
+      return `discord://${info}`;
+    default:
+      return '#';
+  }
+};
 
 export default MyPosts

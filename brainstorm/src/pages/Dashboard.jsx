@@ -8,38 +8,60 @@ function Dashboard() {
       {
         title: "Valorant Tournament Team",
         tags: ["FPS", "Competitive"],
-        deadline: "2 weeks"
+        deadline: "2 weeks",
+        contactMethod: "discord",
+        contactInfo: "valorant_team#1234"
       },
       {
         title: "Minecraft Build Project",
         tags: ["Creative", "Building"],
-        deadline: "Ongoing"
+        deadline: "Ongoing",
+        contactMethod: "discord",
+        contactInfo: "minecraft_builds#5678"
       }
     ],
     research: [
       {
         title: "AI Ethics Research",
         tags: ["AI", "Ethics"],
-        deadline: "6 months"
+        deadline: "6 months",
+        contactMethod: "email",
+        contactInfo: "ai.ethics@research.com"
       },
       {
         title: "Climate Data Analysis",
         tags: ["Data Science", "Climate"],
-        deadline: "3 months"
+        deadline: "3 months",
+        contactMethod: "discord",
+        contactInfo: "climate_research#1234"
       }
     ],
     development: [
       {
         title: "E-commerce Platform",
         tags: ["Next.js", "GraphQL"],
-        deadline: "4 months"
+        deadline: "4 months",
+        contactMethod: "discord",
+        contactInfo: "ecommerce_team#1234"
       },
       {
         title: "Mobile Health App",
         tags: ["React Native", "Healthcare"],
-        deadline: "3 months"
+        deadline: "3 months",
+        contactMethod: "email",
+        contactInfo: "health.app@example.com"
       }
     ]
+  };
+
+  const getContactLink = (method, info) => {
+    switch (method) {
+      case 'phone': return `tel:${info}`;
+      case 'email': return `mailto:${info}`;
+      case 'whatsapp': return `https://wa.me/${info}`;
+      case 'discord': return `discord://${info}`;
+      default: return '#';
+    }
   };
 
   return (
@@ -85,7 +107,17 @@ function Dashboard() {
                           </span>
                         ))}
                       </div>
-                      <span className="text-gray-400 text-sm">{project.deadline}</span>
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-gray-800 flex justify-between items-center">
+                      <span className="text-gray-400 text-xs">
+                        Via: <span className="text-green-400 capitalize">{project.contactMethod}</span>
+                      </span>
+                      <button
+                        onClick={() => window.open(getContactLink(project.contactMethod, project.contactInfo))}
+                        className="text-green-400 text-sm hover:text-green-300 flex items-center gap-1"
+                      >
+                        Join →
+                      </button>
                     </div>
                   </div>
                 ))}

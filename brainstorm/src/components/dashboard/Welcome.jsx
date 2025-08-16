@@ -8,7 +8,7 @@ function Welcome() {
       <div>
         {user ? (
           <h1 className="text-textGreen text-base pl-6 mt-4">
-            Welcome, {user.displayName}!
+            Welcome, {user.userName}!
           </h1>
         ) : (
           <h1>Please log in</h1>

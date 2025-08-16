@@ -8,7 +8,9 @@ function Research() {
       teamSize: '3 researchers needed',
       skillLevel: 'Advanced',
       deadline: '6 months',
-      tags: ['AI', 'Ethics', 'Healthcare']
+      tags: ['AI', 'Ethics', 'Healthcare'],
+      contactMethod: 'email',
+      contactInfo: 'ai.ethics@research.com'
     },
     {
       title: 'Climate Data Analysis',
@@ -16,7 +18,9 @@ function Research() {
       teamSize: '2 analysts needed',
       skillLevel: 'Intermediate',
       deadline: '3 months',
-      tags: ['Data Science', 'Python', 'Climate']
+      tags: ['Data Science', 'Python', 'Climate'],
+      contactMethod: 'discord',
+      contactInfo: 'climate_research#1234'
     },
     {
       title: 'Psychology Study',
@@ -24,7 +28,9 @@ function Research() {
       teamSize: '4 researchers',
       skillLevel: 'Graduate level',
       deadline: 'Ongoing',
-      tags: ['Psychology', 'Social Media', 'Mental Health']
+      tags: ['Psychology', 'Social Media', 'Mental Health'],
+      contactMethod: 'email',
+      contactInfo: 'psych.study@research.com'
     },
     {
       title: 'Blockchain Research',
@@ -32,7 +38,9 @@ function Research() {
       teamSize: '3 developers',
       skillLevel: 'Expert',
       deadline: '4 months',
-      tags: ['Blockchain', 'Sustainability', 'Development']
+      tags: ['Blockchain', 'Sustainability', 'Development'],
+      contactMethod: 'discord',
+      contactInfo: 'blockchain_research#5678'
     },
     {
       title: 'Quantum Computing',
@@ -40,7 +48,9 @@ function Research() {
       teamSize: '2-3 researchers',
       skillLevel: 'PhD level',
       deadline: '1 year',
-      tags: ['Quantum', 'Algorithms', 'Physics']
+      tags: ['Quantum', 'Algorithms', 'Physics'],
+      contactMethod: 'email',
+      contactInfo: 'quantum@research.com'
     },
     {
       title: 'Renewable Energy',
@@ -48,9 +58,21 @@ function Research() {
       teamSize: '4 researchers',
       skillLevel: 'Graduate+',
       deadline: '8 months',
-      tags: ['Energy', 'Materials', 'Engineering']
+      tags: ['Energy', 'Materials', 'Engineering'],
+      contactMethod: 'discord',
+      contactInfo: 'renewable_energy#9012'
     }
   ];
+
+  const getContactLink = (method, info) => {
+    switch (method) {
+      case 'phone': return `tel:${info}`;
+      case 'email': return `mailto:${info}`;
+      case 'whatsapp': return `https://wa.me/${info}`;
+      case 'discord': return `discord://${info}`;
+      default: return '#';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black">
@@ -94,13 +116,23 @@ function Research() {
                     </span>
                   ))}
                 </div>
-              </div>
 
-              <button className="w-full bg-black/40 hover:bg-green-500/20 
-                              text-green-400 font-medium py-3 px-4
-                              transition-all duration-200 border-t border-green-900/50">
-                Join Research
-              </button>
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <div className="text-gray-400 text-sm">
+                      Contact via: <span className="text-green-400 capitalize">{project.contactMethod}</span>
+                    </div>
+                    <button
+                      onClick={() => window.open(getContactLink(project.contactMethod, project.contactInfo))}
+                      className="bg-green-500/10 hover:bg-green-500/20 
+                               text-green-400 px-4 py-2 rounded-lg text-sm 
+                               font-medium transition-colors border border-green-500/20"
+                    >
+                      Join Research
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>

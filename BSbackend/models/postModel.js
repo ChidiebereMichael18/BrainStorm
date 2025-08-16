@@ -33,6 +33,30 @@ const postSchema = mongoose.Schema({
     },
     tags: [{
         type: String
+    }],
+    contactInfo: {
+        type: String,
+        required: [true, "Contact information is required"]
+    },
+    contactMethod: {
+        type: String,
+        required: [true, "Contact method is required"],
+        enum: ['phone', 'email', 'discord', 'whatsapp']
+    },
+    applicants: [{
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        status: {
+            type: String,
+            enum: ['pending', 'accepted', 'rejected'],
+            default: 'pending'
+        },
+        appliedAt: {
+            type: Date,
+            default: Date.now
+        }
     }]
 }, {
     timestamps: true
