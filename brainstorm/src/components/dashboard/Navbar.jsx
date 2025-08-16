@@ -27,7 +27,7 @@ const Navbar = ({ onMenuToggle }) => {
           <FaPlusCircle className="text-white" size={20} onClick={()=> {navigate('./myposts')}} />
         </div>
         <div className="w-8 h-8 bg-textHover  transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-textHover cursor-pointer rounded-full flex items-center justify-center">
-          <FaSearch className=" text-white" size={18}/>
+          <FaSearch className=" text-white" size={18} onClick={()=> {navigate('./search')}}/>
         </div>
         <div className="w-8 h-8 bg-textHover hover:animate-pulse cursor-pointer transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110 hover:bg-textHover rounded-full flex items-center justify-center">
           <FaUser className="text-white" size={18} onClick={()=> {navigate("./profile")}}/>

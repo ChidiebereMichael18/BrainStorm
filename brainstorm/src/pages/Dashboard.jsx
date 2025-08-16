@@ -47,24 +47,40 @@ function Dashboard() {
       <div className="container mx-auto px-4 py-8">
         <Welcome />
         
+        {/* Featured Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           {Object.entries(featuredProjects).map(([category, projects]) => (
-            <div key={category} className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
-              <div className="flex justify-between items-center mb-4">
+            <div key={category} 
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-800 
+                       hover:border-green-500/50 transition-all duration-300"
+            >
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-green-400 capitalize">{category}</h2>
-                <Link to={`/dashboard/${category}`} className="text-green-400 text-sm hover:text-green-300">
+                <Link 
+                  to={`/dashboard/${category}`}
+                  className="text-green-400 text-sm hover:text-green-300 flex items-center gap-2"
+                >
                   View All →
                 </Link>
               </div>
               
               <div className="space-y-4">
                 {projects.map((project, index) => (
-                  <div key={index} className="bg-black/40 p-3 rounded-lg hover:bg-green-500/5 transition-all">
-                    <h3 className="text-white font-medium mb-2">{project.title}</h3>
+                  <div key={index} 
+                    className="group bg-black/40 p-4 rounded-xl hover:bg-green-500/5 
+                             transition-all cursor-pointer border border-transparent 
+                             hover:border-green-500/20"
+                  >
+                    <h3 className="text-white font-medium mb-3 group-hover:text-green-400">
+                      {project.title}
+                    </h3>
                     <div className="flex justify-between items-center">
                       <div className="flex gap-2">
                         {project.tags.map((tag, i) => (
-                          <span key={i} className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded-full">
+                          <span key={i} 
+                            className="px-2 py-1 bg-green-500/10 text-green-400 
+                                     text-xs rounded-full border border-green-500/20"
+                          >
                             {tag}
                           </span>
                         ))}
@@ -78,6 +94,7 @@ function Dashboard() {
           ))}
         </div>
 
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
           <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
             <div className="text-2xl font-bold text-green-400">24</div>

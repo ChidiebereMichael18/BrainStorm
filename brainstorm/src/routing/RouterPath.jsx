@@ -12,6 +12,7 @@ import MyPosts from "../pages/MyPosts";
 import Settings from "../pages/Settings";
 import Profile from "../pages/Profile";
 import Post from "../components/app/Post";
+import Search from "../components/dashboard/Search";
 
 function RouterPath() {
   return (
@@ -30,6 +31,7 @@ function RouterPath() {
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<Profile />} />
         <Route path="post" element={<Post />} />
+        <Route path="search" element={<Search />} />
         <Route path="*" element={<h1>Not Found</h1>} />
       </Route>
     </Routes>
