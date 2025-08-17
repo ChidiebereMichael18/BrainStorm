@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../../services/api';
+import { showToast } from '../../utils/toast';
 
 function Login() {
   const navigate = useNavigate();
@@ -13,14 +15,16 @@ function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    // Simulate login success
-    if (form.email && form.password) {
+    try {
+      const response = await authAPI.login(form);
+      localStorage.setItem('token', response.data.token);
+      showToast.success('Successfully logged in!');
       navigate('/dashboard');
-    } else {
-      setError('Invalid credentials');
+    } catch (err) {
+      showToast.error(err.response?.data?.message || 'Login failed');
     }
   };
 

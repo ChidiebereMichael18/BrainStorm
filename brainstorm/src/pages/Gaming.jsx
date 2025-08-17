@@ -1,68 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { postsAPI } from '../services/api';
 
 function Gaming() {
-  const gamingActivities = [
-    {
-      title: 'Valorant Tournament Team',
-      description: 'Looking for competitive players to form a Valorant team for upcoming tournament',
-      teamSize: '5 players needed',
-      skillLevel: 'Diamond+',
-      deadline: '2 weeks',
-      tags: ['FPS', 'Competitive', 'Tournament'],
-      contactMethod: 'discord',
-      contactInfo: 'valorant_team#1234'
-    },
-    {
-      title: 'Minecraft Build Project',
-      description: 'Creative builders wanted for massive fantasy world project',
-      teamSize: '3-4 builders',
-      skillLevel: 'Intermediate',
-      deadline: 'Ongoing',
-      tags: ['Creative', 'Building', 'Long-term'],
-      contactMethod: 'discord',
-      contactInfo: 'minecraft_builds#5678'
-    },
-    {
-      title: 'Game Development Squad',
-      description: 'Unity developers and artists needed for indie game project',
-      teamSize: '4 developers',
-      skillLevel: 'Beginner friendly',
-      deadline: '3 months',
-      tags: ['Development', 'Unity', 'Indie'],
-      contactMethod: 'email',
-      contactInfo: 'devsquad@example.com'
-    },
-    {
-      title: 'League of Legends Team',
-      description: 'Recruiting for amateur LoL tournament. Need support and jungle roles',
-      teamSize: '2 players needed',
-      skillLevel: 'Gold+',
-      deadline: '1 week',
-      tags: ['MOBA', 'Team', 'Competitive'],
-      contactMethod: 'whatsapp',
-      contactInfo: '1234567890'
-    },
-    {
-      title: 'Fortnite Squad',
-      description: 'Building a consistent squad for competitive play and tournaments',
-      teamSize: '3 players needed',
-      skillLevel: 'Advanced',
-      deadline: 'ASAP',
-      tags: ['Battle Royale', 'Competitive', 'Active'],
-      contactMethod: 'phone',
-      contactInfo: '9876543210'
-    },
-    {
-      title: 'Streaming Team',
-      description: 'Looking for content creators to form a streaming team',
-      teamSize: '4-5 streamers',
-      skillLevel: 'Any',
-      deadline: 'Ongoing',
-      tags: ['Content', 'Streaming', 'Casual'],
-      contactMethod: 'discord',
-      contactInfo: 'streamteam#0001'
-    }
-  ];
+  const [gamingActivities, setGamingActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchGamingPosts = async () => {
+      try {
+        const response = await postsAPI.getGamingPosts();
+        setGamingActivities(response.data);
+      } catch (err) {
+        setError('Failed to fetch gaming posts');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGamingPosts();
+  }, []);
 
   const getContactLink = (method, info) => {
     switch (method) {
@@ -73,6 +31,9 @@ function Gaming() {
       default: return '#';
     }
   };
+
+  if (loading) return <div className="text-green-500 text-center py-12">Loading...</div>;
+  if (error) return <div className="text-red-500 text-center py-12">{error}</div>;
 
   return (
     <div className="min-h-screen bg-black">

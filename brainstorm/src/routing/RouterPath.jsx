@@ -13,6 +13,7 @@ import Settings from "../pages/Settings";
 import Profile from "../pages/Profile";
 import Post from "../components/app/Post";
 import Search from "../components/dashboard/Search";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 function RouterPath() {
   return (
@@ -21,8 +22,13 @@ function RouterPath() {
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
-      {/* Dashboard Routes */}
-      <Route path="/dashboard" element={<Layout />}>
+      
+      {/* Protected Dashboard Routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
         <Route path="gaming" element={<Gaming />} />
         <Route path="development" element={<Development />} />

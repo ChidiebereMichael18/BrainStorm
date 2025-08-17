@@ -1,68 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { postsAPI } from '../services/api';
 
 function Research() {
-  const researchProjects = [
-    {
-      title: 'AI Ethics Research',
-      description: 'Investigating ethical implications of AI in healthcare decision-making',
-      teamSize: '3 researchers needed',
-      skillLevel: 'Advanced',
-      deadline: '6 months',
-      tags: ['AI', 'Ethics', 'Healthcare'],
-      contactMethod: 'email',
-      contactInfo: 'ai.ethics@research.com'
-    },
-    {
-      title: 'Climate Data Analysis',
-      description: 'Statistical analysis of climate patterns using Python and R',
-      teamSize: '2 analysts needed',
-      skillLevel: 'Intermediate',
-      deadline: '3 months',
-      tags: ['Data Science', 'Python', 'Climate'],
-      contactMethod: 'discord',
-      contactInfo: 'climate_research#1234'
-    },
-    {
-      title: 'Psychology Study',
-      description: 'Research on social media impact on mental health',
-      teamSize: '4 researchers',
-      skillLevel: 'Graduate level',
-      deadline: 'Ongoing',
-      tags: ['Psychology', 'Social Media', 'Mental Health'],
-      contactMethod: 'email',
-      contactInfo: 'psych.study@research.com'
-    },
-    {
-      title: 'Blockchain Research',
-      description: 'Exploring sustainable blockchain solutions for supply chain',
-      teamSize: '3 developers',
-      skillLevel: 'Expert',
-      deadline: '4 months',
-      tags: ['Blockchain', 'Sustainability', 'Development'],
-      contactMethod: 'discord',
-      contactInfo: 'blockchain_research#5678'
-    },
-    {
-      title: 'Quantum Computing',
-      description: 'Research on quantum algorithms for optimization problems',
-      teamSize: '2-3 researchers',
-      skillLevel: 'PhD level',
-      deadline: '1 year',
-      tags: ['Quantum', 'Algorithms', 'Physics'],
-      contactMethod: 'email',
-      contactInfo: 'quantum@research.com'
-    },
-    {
-      title: 'Renewable Energy',
-      description: 'Study on efficient solar cell materials',
-      teamSize: '4 researchers',
-      skillLevel: 'Graduate+',
-      deadline: '8 months',
-      tags: ['Energy', 'Materials', 'Engineering'],
-      contactMethod: 'discord',
-      contactInfo: 'renewable_energy#9012'
-    }
-  ];
+  const [researchProjects, setResearchProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchResearchPosts = async () => {
+      try {
+        const response = await postsAPI.getResearchPosts();
+        setResearchProjects(response.data);
+      } catch (err) {
+        setError('Failed to fetch research posts');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResearchPosts();
+  }, []);
 
   const getContactLink = (method, info) => {
     switch (method) {
@@ -73,6 +31,9 @@ function Research() {
       default: return '#';
     }
   };
+
+  if (loading) return <div className="text-green-500 text-center py-12">Loading...</div>;
+  if (error) return <div className="text-red-500 text-center py-12">{error}</div>;
 
   return (
     <div className="min-h-screen bg-black">

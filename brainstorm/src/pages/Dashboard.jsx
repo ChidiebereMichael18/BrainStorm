@@ -1,58 +1,39 @@
 import React, { useEffect, useState } from "react";
 import Welcome from "../components/dashboard/Welcome";
 import { Link } from "react-router-dom";
+import { postsAPI } from '../services/api';
 
 function Dashboard() {
-  const featuredProjects = {
-    gaming: [
-      {
-        title: "Valorant Tournament Team",
-        tags: ["FPS", "Competitive"],
-        deadline: "2 weeks",
-        contactMethod: "discord",
-        contactInfo: "valorant_team#1234"
-      },
-      {
-        title: "Minecraft Build Project",
-        tags: ["Creative", "Building"],
-        deadline: "Ongoing",
-        contactMethod: "discord",
-        contactInfo: "minecraft_builds#5678"
+  const [featuredProjects, setFeaturedProjects] = useState({
+    gaming: [],
+    research: [],
+    development: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategoryPosts = async () => {
+      try {
+        const [gaming, research, development] = await Promise.all([
+          postsAPI.getGamingPosts(),
+          postsAPI.getResearchPosts(),
+          postsAPI.getDevelopmentPosts()
+        ]);
+
+        setFeaturedProjects({
+          gaming: gaming.data.slice(0, 2),
+          research: research.data.slice(0, 2),
+          development: development.data.slice(0, 2)
+        });
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
       }
-    ],
-    research: [
-      {
-        title: "AI Ethics Research",
-        tags: ["AI", "Ethics"],
-        deadline: "6 months",
-        contactMethod: "email",
-        contactInfo: "ai.ethics@research.com"
-      },
-      {
-        title: "Climate Data Analysis",
-        tags: ["Data Science", "Climate"],
-        deadline: "3 months",
-        contactMethod: "discord",
-        contactInfo: "climate_research#1234"
-      }
-    ],
-    development: [
-      {
-        title: "E-commerce Platform",
-        tags: ["Next.js", "GraphQL"],
-        deadline: "4 months",
-        contactMethod: "discord",
-        contactInfo: "ecommerce_team#1234"
-      },
-      {
-        title: "Mobile Health App",
-        tags: ["React Native", "Healthcare"],
-        deadline: "3 months",
-        contactMethod: "email",
-        contactInfo: "health.app@example.com"
-      }
-    ]
-  };
+    };
+
+    fetchCategoryPosts();
+  }, []);
 
   const getContactLink = (method, info) => {
     switch (method) {
@@ -63,6 +44,10 @@ function Dashboard() {
       default: return '#';
     }
   };
+
+  if (loading) {
+    return <div className="text-green-500 text-center py-12">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-black">

@@ -1,68 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import { postsAPI } from '../services/api';
 
 function Development() {
-  const devProjects = [
-    {
-      title: 'E-commerce Platform',
-      description: 'Building a modern e-commerce platform using Next.js and GraphQL',
-      teamSize: '4 developers',
-      skillLevel: 'Intermediate-Senior',
-      deadline: '4 months',
-      tags: ['Next.js', 'GraphQL', 'TypeScript'],
-      contactMethod: 'discord',
-      contactInfo: 'ecommerce_team#1234'
-    },
-    {
-      title: 'Mobile Health App',
-      description: 'Developing a React Native app for mental health tracking',
-      teamSize: '3 developers needed',
-      skillLevel: 'Intermediate',
-      deadline: '3 months',
-      tags: ['React Native', 'Mobile', 'Healthcare'],
-      contactMethod: 'email',
-      contactInfo: 'health.app@example.com'
-    },
-    {
-      title: 'AI Chat Assistant',
-      description: 'Creating an AI-powered chat assistant using Python and TensorFlow',
-      teamSize: '2 ML engineers',
-      skillLevel: 'Advanced',
-      deadline: '6 months',
-      tags: ['Python', 'AI', 'Machine Learning'],
-      contactMethod: 'discord',
-      contactInfo: 'ai_assistant#5678'
-    },
-    {
-      title: 'DevOps Pipeline',
-      description: 'Setting up automated CI/CD pipeline for microservices',
-      teamSize: '2 DevOps engineers',
-      skillLevel: 'Senior',
-      deadline: '2 months',
-      tags: ['DevOps', 'Docker', 'Kubernetes'],
-      contactMethod: 'email',
-      contactInfo: 'devops@example.com'
-    },
-    {
-      title: 'Web3 DApp',
-      description: 'Developing a decentralized application on Ethereum',
-      teamSize: '3 developers',
-      skillLevel: 'Advanced',
-      deadline: '5 months',
-      tags: ['Solidity', 'Web3', 'Ethereum'],
-      contactMethod: 'discord',
-      contactInfo: 'web3_team#9012'
-    },
-    {
-      title: 'Data Analytics Dashboard',
-      description: 'Building real-time analytics dashboard using MERN stack',
-      teamSize: '3-4 developers',
-      skillLevel: 'Intermediate',
-      deadline: '3 months',
-      tags: ['MongoDB', 'Express', 'React', 'Node'],
-      contactMethod: 'whatsapp',
-      contactInfo: '1234567890'
-    }
-  ];
+  const [devProjects, setDevProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDevelopmentPosts = async () => {
+      try {
+        const response = await postsAPI.getDevelopmentPosts();
+        setDevProjects(response.data);
+      } catch (err) {
+        setError('Failed to fetch development posts');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDevelopmentPosts();
+  }, []);
 
   const getContactLink = (method, info) => {
     switch (method) {
@@ -73,6 +31,9 @@ function Development() {
       default: return '#';
     }
   };
+
+  if (loading) return <div className="text-green-500 text-center py-12">Loading...</div>;
+  if (error) return <div className="text-red-500 text-center py-12">{error}</div>;
 
   return (
     <div className="min-h-screen bg-black">

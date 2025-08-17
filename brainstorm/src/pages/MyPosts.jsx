@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { postsAPI } from '../services/api';
+import { showToast } from '../utils/toast';
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
   const [newPost, setNewPost] = useState({
     title: '',
     description: '',
@@ -15,28 +18,85 @@ function MyPosts() {
     contactInfo: ''
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const post = {
-      ...newPost,
-      id: Date.now(),
-      tags: newPost.tags.split(',').map(tag => tag.trim()),
-      createdAt: new Date().toISOString()
-    };
-    setPosts([post, ...posts]);
-    setShowForm(false);
-    setNewPost({
-      title: '',
-      description: '',
-      category: 'gaming',
-      teamSize: '',
-      skillLevel: '',
-      deadline: '',
-      tags: '',
-      contactMethod: 'discord',
-      contactInfo: ''
-    });
+  const fetchPosts = async () => {
+    try {
+      const response = await postsAPI.getMyPosts();
+      setPosts(response.data);
+    } catch (err) {
+      console.error('Failed to fetch posts:', err);
+    }
   };
+
+  const handleEdit = (post) => {
+    setEditingPost(post);
+    setNewPost({
+      title: post.title,
+      description: post.description,
+      category: post.category,
+      teamSize: post.teamSize,
+      skillLevel: post.skillLevel,
+      deadline: post.deadline,
+      tags: post.tags.join(', '),
+      contactMethod: post.contactMethod,
+      contactInfo: post.contactInfo
+    });
+    setShowForm(true);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const postData = {
+        ...newPost,
+        tags: newPost.tags.split(',').map(tag => tag.trim())
+      };
+
+      if (editingPost) {
+        await postsAPI.updatePost(editingPost._id, postData);
+        showToast.success('Post updated successfully!');
+      } else {
+        await postsAPI.createPost(postData);
+        showToast.success('Post created successfully!');
+      }
+      
+      setShowForm(false);
+      setEditingPost(null);
+      setNewPost({
+        title: '',
+        description: '',
+        category: 'gaming',
+        teamSize: '',
+        skillLevel: '',
+        deadline: '',
+        tags: '',
+        contactMethod: 'discord',
+        contactInfo: ''
+      });
+      fetchPosts();
+    } catch (err) {
+      showToast.error('Failed to save post');
+    }
+  };
+
+  const handleDelete = async (postId) => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      try {
+        await postsAPI.deletePost(postId);
+        showToast.success('Post deleted successfully!');
+        fetchPosts();
+      } catch (err) {
+        showToast.error('Failed to delete post');
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  // Update the form title and button text based on editing state
+  const formTitle = editingPost ? 'Edit Post' : 'Create New Post';
+  const buttonText = editingPost ? 'Update Post' : 'Create Post';
 
   return (
     <div className="min-h-screen bg-black p-4">
@@ -44,15 +104,33 @@ function MyPosts() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-green-500">My Posts</h1>
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              setShowForm(!showForm);
+              if (!showForm) {
+                setEditingPost(null);
+                setNewPost({
+                  title: '',
+                  description: '',
+                  category: 'gaming',
+                  teamSize: '',
+                  skillLevel: '',
+                  deadline: '',
+                  tags: '',
+                  contactMethod: 'discord',
+                  contactInfo: ''
+                });
+              }
+            }}
             className="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-400"
           >
             {showForm ? 'Cancel' : 'Create New Post'}
           </button>
         </div>
 
+        {/* Update form title */}
         {showForm && (
           <form onSubmit={handleSubmit} className="bg-gray-900/50 rounded-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-green-500 mb-6">{formTitle}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
@@ -137,7 +215,7 @@ function MyPosts() {
               type="submit"
               className="mt-4 bg-green-500 text-black px-6 py-2 rounded-lg hover:bg-green-400"
             >
-              Post
+              {buttonText}
             </button>
           </form>
         )}
@@ -147,7 +225,7 @@ function MyPosts() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map(post => (
-              <div key={post.id} className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
+              <div key={post._id} className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="text-xl font-bold text-green-400">{post.title}</h3>
                   <span className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded-full capitalize">
@@ -179,6 +257,20 @@ function MyPosts() {
                       Join Project
                     </button>
                   </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    onClick={() => handleEdit(post)}
+                    className="bg-green-500/10 text-green-400 px-3 py-1 rounded-lg text-sm hover:bg-green-500/20"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    className="bg-red-500/10 text-red-400 px-3 py-1 rounded-lg text-sm hover:bg-red-500/20"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}

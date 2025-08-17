@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../../services/api';
+import { showToast } from '../../utils/toast';
 
 function Signup() {
   const navigate = useNavigate();
@@ -15,15 +17,31 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+    
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
+      showToast.error('Passwords do not match');
       return;
     }
-    // Simulate signup success
-    navigate('/dashboard');
+
+    try {
+      const response = await authAPI.register({
+        username: form.username,
+        email: form.email,
+        password: form.password
+      });
+      
+      localStorage.setItem('token', response.data.token);
+      showToast.success('Account created successfully!');
+      navigate('/dashboard');
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Registration failed';
+      setError(errorMessage);
+      showToast.error(errorMessage);
+    }
   };
 
   return (

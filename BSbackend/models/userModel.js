@@ -15,6 +15,10 @@ const userSchema = mongoose.Schema({
         type: String,
         required: [true, "Password is required"]
     },
+    bio:{
+        type: String,
+        default: ''
+    },
     interests: [{
         type: String,
         enum: ['gaming', 'development', 'research']
