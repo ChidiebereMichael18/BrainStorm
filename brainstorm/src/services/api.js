@@ -32,24 +32,25 @@ export const postsAPI = {
     getAllPosts: (filters = {}) => api.get('/api/posts', { params: filters }),
     // Create a new post (protected)
     createPost: (postData) => api.post('/api/posts/create', postData),
-    // Get post by ID
-    getPostById: (id) => api.get(`/api/posts/${id}`),
+    // Get posts by category
+    getPostsByCategory: (category) => api.get(`/api/posts/category/${category}`),
     // Get posts by tag
     getPostsByTag: (tag) => api.get(`/api/posts/tag/${tag}`),
     // Get posts by user ID
     getPostsByUser: (userId) => api.get(`/api/posts/user/${userId}`),
+    // Get post by ID
+    getPostById: (id) => api.get(`/api/posts/${id}`),
     // Update a post (protected)
     updatePost: (id, postData) => api.put(`/api/posts/${id}`, postData),
     // Delete a post (protected)
     deletePost: (id) => api.delete(`/api/posts/${id}`),
     // Search posts
-    searchPosts: (query) => api.get(`/api/posts/search`, { params: { q: query } }),
+    searchPosts: (query) => api.get(`/api/posts/search?q=${query}`),
     // Simplified category endpoints
-    getGamingPosts: () => api.get('/api/posts/category=gaming'),
-    getResearchPosts: () => api.get('/api/posts/category=research'),
-    getDevelopmentPosts: () => api.get('/api/posts/category=development'),
+    getGamingPosts: () => api.get('/api/posts/category/gaming'),
+    getResearchPosts: () => api.get('/api/posts/category/research'),
+    getDevelopmentPosts: () => api.get('/api/posts/category/development'),
     getStats: () => api.get('/api/stats'),
-    
 };
 
 export default api;

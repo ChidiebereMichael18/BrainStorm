@@ -62,7 +62,7 @@ function Profile() {
 
             <button
               className="mt-6 w-full flex items-center justify-center gap-2 bg-green-500/10 text-green-500 py-2 rounded-lg hover:bg-green-500/20 transition-all"
-              onClick={() => navigate('./settings')}
+              onClick={() => navigate('/dashboard/settings')}
             >
               <FiEdit2 size={16} />
               Edit Profile

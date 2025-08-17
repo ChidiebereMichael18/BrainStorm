@@ -32,14 +32,14 @@ const createPost = asyncHandler(async (req, res) => {
     res.status(201).json(post);
 });
 
-const getPostById = asyncHandler(async (req, res) => {
-    const post = await Post.findById(req.params.id).populate('user', 'username');
-    if (!post) {
-        res.status(404);
-        throw new Error('Post not found');
-    }
-    res.json(post);
-});
+// const getPostById = asyncHandler(async (req, res) => {
+//     const post = await Post.findById(req.params.id).populate('user', 'username');
+//     if (!post) {
+//         res.status(404);
+//         throw new Error('Post not found');
+//     }
+//     res.json(post);
+// });
 
 const getPostsByCategory = asyncHandler(async (req, res) => {
     const { category } = req.params;
@@ -120,7 +120,7 @@ const searchPosts = asyncHandler(async (req, res) => {
 module.exports = {
     getPosts,
     createPost,
-    getPostById,
+    // getPostById,
     getPostsByTag,
     getPostsByUser,
     updatePost,

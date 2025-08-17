@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode"; // Fix import
+import { authAPI } from '../../services/api';
+import { showToast } from '../../utils/toast';
 
 function Welcome() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const fetchUserData = async () => {
       try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        const response = await authAPI.getUser(userId);
+        setUser(response.data);
       } catch (error) {
-        console.error('Error decoding token:', error);
+        console.error('Error fetching user:', error);
+        showToast.error('Failed to load user data');
       }
-    }
+    };
+
+    fetchUserData();
   }, []);
 
   return (
@@ -21,14 +27,14 @@ function Welcome() {
       {user ? (
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-bold text-green-500">
-            Welcome back, {user.username}! 👋
+            Welcome back, {user.username || 'User'}! 👋
           </h1>
           <p className="text-gray-400">
             Ready to collaborate on some amazing projects?
           </p>
         </div>
       ) : (
-        <h1 className="text-gray-400">Loading...</h1>
+        <div className="text-gray-400">Loading...</div>
       )}
     </div>
   );

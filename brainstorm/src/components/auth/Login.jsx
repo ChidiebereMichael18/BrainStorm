@@ -21,6 +21,7 @@ function Login() {
     try {
       const response = await authAPI.login(form);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userId', response.data._id);
       showToast.success('Successfully logged in!');
       navigate('/dashboard');
     } catch (err) {

@@ -46,7 +46,7 @@ function Signup() {
       
       if (response.data.token && response.data.id) {
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userId', response.data.id);
+        localStorage.setItem('userId', response.data._id);
         showToast.success('Account created successfully!');
         navigate('/dashboard');
       }
