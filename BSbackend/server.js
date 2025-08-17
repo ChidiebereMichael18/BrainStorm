@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 // const errorHandler = require('./middleware/errorHandler');
-const connectDb = require('./config/dbConnection');
+const connectDb = require('./config/connectDb');
 
 connectDb();
 const app = express();
@@ -18,6 +18,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/stats', require('./routes/statsRoutes')); 
 
 // app.use(errorHandler)
 

@@ -6,8 +6,10 @@ const {
     getPostById,
     getPostsByTag,
     getPostsByUser,
+    getPostsByCategory,
     updatePost,
-    deletePost 
+    deletePost,
+    searchPosts
 } = require('../controllers/postController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -18,5 +20,7 @@ router.get('/user/:userId', getPostsByUser);
 router.get('/:id', getPostById);
 router.put('/:id', protect, updatePost);
 router.delete('/:id', protect, deletePost);
+router.get('/search', searchPosts);
+router.get('/category/:category', getPostsByCategory);
 
 module.exports = router;

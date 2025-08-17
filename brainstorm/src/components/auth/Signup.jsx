@@ -9,7 +9,11 @@ function Signup() {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    name: '',
+    bio: '',
+    skills: '',
+    interests: '',
   });
   const [error, setError] = useState('');
 
@@ -20,7 +24,7 @@ function Signup() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    
+
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
       showToast.error('Passwords do not match');
@@ -28,15 +32,24 @@ function Signup() {
     }
 
     try {
-      const response = await authAPI.register({
+      const userData = {
         username: form.username,
         email: form.email,
-        password: form.password
-      });
+        password: form.password,
+        name: form.name,
+        bio: form.bio,
+        skills: form.skills ? form.skills.split(',').map(skill => skill.trim()).filter(skill => skill) : [],
+        interests: form.interests ? form.interests.split(',').map(interest => interest.trim()).filter(interest => interest) : [],
+      };
+
+      const response = await authAPI.register(userData);
       
-      localStorage.setItem('token', response.data.token);
-      showToast.success('Account created successfully!');
-      navigate('/dashboard');
+      if (response.data.token && response.data.id) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userId', response.data.id);
+        showToast.success('Account created successfully!');
+        navigate('/dashboard');
+      }
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       setError(errorMessage);
@@ -63,12 +76,44 @@ function Signup() {
           className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
         />
         <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+          className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
+        />
+        <input
           type="email"
           name="email"
           placeholder="Email"
           value={form.email}
           onChange={handleChange}
           required
+          className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
+        />
+        <textarea
+          name="bio"
+          placeholder="Bio (e.g., Developer, Gamer)"
+          value={form.bio}
+          onChange={handleChange}
+          className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
+          rows="3"
+        />
+        <input
+          type="text"
+          name="skills"
+          placeholder="Skills (comma-separated, e.g., React, Python)"
+          value={form.skills}
+          onChange={handleChange}
+          className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
+        />
+        <input
+          type="text"
+          name="interests"
+          placeholder="Interests (comma-separated, e.g., Gaming, Research)"
+          value={form.interests}
+          onChange={handleChange}
           className="w-full bg-black text-green-400 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-green-500 transition-all duration-200 placeholder-gray-500"
         />
         <input

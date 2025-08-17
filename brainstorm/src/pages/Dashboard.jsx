@@ -2,46 +2,61 @@ import React, { useEffect, useState } from "react";
 import Welcome from "../components/dashboard/Welcome";
 import { Link } from "react-router-dom";
 import { postsAPI } from '../services/api';
+import { showToast } from '../utils/toast';
 
 function Dashboard() {
   const [featuredProjects, setFeaturedProjects] = useState({
     gaming: [],
     research: [],
-    development: []
+    development: [],
+  });
+  const [stats, setStats] = useState({
+    activeProjects: 0,
+    collaborators: 0,
+    completedProjects: 0,
+    newToday: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategoryPosts = async () => {
+    const fetchData = async () => {
       try {
-        const [gaming, research, development] = await Promise.all([
+        const [gaming, research, development, statsResponse] = await Promise.all([
           postsAPI.getGamingPosts(),
           postsAPI.getResearchPosts(),
-          postsAPI.getDevelopmentPosts()
+          postsAPI.getDevelopmentPosts(),
+          postsAPI.getStats(),
         ]);
 
         setFeaturedProjects({
           gaming: gaming.data.slice(0, 2),
           research: research.data.slice(0, 2),
-          development: development.data.slice(0, 2)
+          development: development.data.slice(0, 2),
         });
+        setStats(statsResponse.data);
       } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching data:', error);
+        showToast.error(error.response?.data?.message || 'Failed to fetch dashboard data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCategoryPosts();
+    fetchData();
   }, []);
 
   const getContactLink = (method, info) => {
     switch (method) {
-      case 'phone': return `tel:${info}`;
-      case 'email': return `mailto:${info}`;
-      case 'whatsapp': return `https://wa.me/${info}`;
-      case 'discord': return `discord://${info}`;
-      default: return '#';
+      case 'phone':
+        return `tel:${info}`;
+      case 'email':
+        return `mailto:${info}`;
+      case 'whatsapp':
+        return `https://wa.me/${info}`;
+      case 'discord':
+        return info.startsWith('https://') ? info : `https://discord.gg/${info}`;
+      default:
+        return '#';
     }
   };
 
@@ -57,13 +72,13 @@ function Dashboard() {
         {/* Featured Projects Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
           {Object.entries(featuredProjects).map(([category, projects]) => (
-            <div key={category} 
-              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-800 
-                       hover:border-green-500/50 transition-all duration-300"
+            <div
+              key={category}
+              className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-800 hover:border-green-500/50 transition-all duration-300"
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-green-400 capitalize">{category}</h2>
-                <Link 
+                <Link
                   to={`/dashboard/${category}`}
                   className="text-green-400 text-sm hover:text-green-300 flex items-center gap-2"
                 >
@@ -72,40 +87,43 @@ function Dashboard() {
               </div>
               
               <div className="space-y-4">
-                {projects.map((project, index) => (
-                  <div key={index} 
-                    className="group bg-black/40 p-4 rounded-xl hover:bg-green-500/5 
-                             transition-all cursor-pointer border border-transparent 
-                             hover:border-green-500/20"
-                  >
-                    <h3 className="text-white font-medium mb-3 group-hover:text-green-400">
-                      {project.title}
-                    </h3>
-                    <div className="flex justify-between items-center">
-                      <div className="flex gap-2">
-                        {project.tags.map((tag, i) => (
-                          <span key={i} 
-                            className="px-2 py-1 bg-green-500/10 text-green-400 
-                                     text-xs rounded-full border border-green-500/20"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                {projects.length ? (
+                  projects.map((project, index) => (
+                    <div
+                      key={index}
+                      className="group bg-black/40 p-4 rounded-xl hover:bg-green-500/5 transition-all cursor-pointer border border-transparent hover:border-green-500/20"
+                    >
+                      <h3 className="text-white font-medium mb-3 group-hover:text-green-400">
+                        {project.title}
+                      </h3>
+                      <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                          {project.tags?.map((tag, i) => (
+                            <span
+                              key={i}
+                              className="px-2 py-1 bg-green-500/10 text-green-400 text-xs rounded-full border border-green-500/20"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-800 flex justify-between items-center">
+                        <span className="text-gray-400 text-xs">
+                          Via: <span className="text-green-400 capitalize">{project.contactMethod}</span>
+                        </span>
+                        <button
+                          onClick={() => window.open(getContactLink(project.contactMethod, project.contactInfo))}
+                          className="text-green-400 text-sm hover:text-green-300 flex items-center gap-1"
+                        >
+                          Join →
+                        </button>
                       </div>
                     </div>
-                    <div className="mt-3 pt-3 border-t border-gray-800 flex justify-between items-center">
-                      <span className="text-gray-400 text-xs">
-                        Via: <span className="text-green-400 capitalize">{project.contactMethod}</span>
-                      </span>
-                      <button
-                        onClick={() => window.open(getContactLink(project.contactMethod, project.contactInfo))}
-                        className="text-green-400 text-sm hover:text-green-300 flex items-center gap-1"
-                      >
-                        Join →
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-gray-400 text-sm">No projects available</div>
+                )}
               </div>
             </div>
           ))}
@@ -114,19 +132,19 @@ function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
           <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-            <div className="text-2xl font-bold text-green-400">24</div>
+            <div className="text-2xl font-bold text-green-400">{stats.activeProjects}</div>
             <div className="text-gray-400 text-sm">Active Projects</div>
           </div>
           <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-            <div className="text-2xl font-bold text-green-400">156</div>
+            <div className="text-2xl font-bold text-green-400">{stats.collaborators}</div>
             <div className="text-gray-400 text-sm">Collaborators</div>
           </div>
           <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-            <div className="text-2xl font-bold text-green-400">12</div>
+            <div className="text-2xl font-bold text-green-400">{stats.completedProjects}</div>
             <div className="text-gray-400 text-sm">Completed Projects</div>
           </div>
           <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-800">
-            <div className="text-2xl font-bold text-green-400">8</div>
+            <div className="text-2xl font-bold text-green-400">{stats.newToday}</div>
             <div className="text-gray-400 text-sm">New Today</div>
           </div>
         </div>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { postsAPI } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { postsAPI, authAPI } from '../services/api';
 import { showToast } from '../utils/toast';
 
 function MyPosts() {
@@ -20,10 +20,16 @@ function MyPosts() {
 
   const fetchPosts = async () => {
     try {
-      const response = await postsAPI.getMyPosts();
+      const userId = localStorage.getItem('userId'); // Get userId from localStorage
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      console.log('Fetching posts for userId:', userId); // Debug
+      const response = await postsAPI.getPostsByUser(userId);
       setPosts(response.data);
     } catch (err) {
       console.error('Failed to fetch posts:', err);
+      showToast.error(err.response?.data?.message || 'Failed to fetch posts');
     }
   };
 
@@ -33,10 +39,10 @@ function MyPosts() {
       title: post.title,
       description: post.description,
       category: post.category,
-      teamSize: post.teamSize,
-      skillLevel: post.skillLevel,
-      deadline: post.deadline,
-      tags: post.tags.join(', '),
+      teamSize: post.teamSize || '',
+      skillLevel: post.skillLevel || '',
+      deadline: post.deadline ? new Date(post.deadline).toISOString().split('T')[0] : '',
+      tags: post.tags?.join(', ') || '',
       contactMethod: post.contactMethod,
       contactInfo: post.contactInfo
     });
@@ -48,7 +54,7 @@ function MyPosts() {
     try {
       const postData = {
         ...newPost,
-        tags: newPost.tags.split(',').map(tag => tag.trim())
+        tags: newPost.tags ? newPost.tags.split(',').map(tag => tag.trim()).filter(tag => tag) : []
       };
 
       if (editingPost) {
@@ -74,7 +80,7 @@ function MyPosts() {
       });
       fetchPosts();
     } catch (err) {
-      showToast.error('Failed to save post');
+      showToast.error(err.response?.data?.message || 'Failed to save post');
     }
   };
 
@@ -85,7 +91,7 @@ function MyPosts() {
         showToast.success('Post deleted successfully!');
         fetchPosts();
       } catch (err) {
-        showToast.error('Failed to delete post');
+        showToast.error(err.response?.data?.message || 'Failed to delete post');
       }
     }
   };
@@ -94,7 +100,6 @@ function MyPosts() {
     fetchPosts();
   }, []);
 
-  // Update the form title and button text based on editing state
   const formTitle = editingPost ? 'Edit Post' : 'Create New Post';
   const buttonText = editingPost ? 'Update Post' : 'Create Post';
 
@@ -127,7 +132,6 @@ function MyPosts() {
           </button>
         </div>
 
-        {/* Update form title */}
         {showForm && (
           <form onSubmit={handleSubmit} className="bg-gray-900/50 rounded-lg p-6 mb-8">
             <h2 className="text-2xl font-bold text-green-500 mb-6">{formTitle}</h2>
@@ -150,12 +154,11 @@ function MyPosts() {
                 <option value="development">Development</option>
               </select>
               <input
-                type="text"
+                type="number"
                 placeholder="Team Size"
                 className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none"
                 value={newPost.teamSize}
                 onChange={(e) => setNewPost({...newPost, teamSize: e.target.value})}
-                required
               />
               <input
                 type="text"
@@ -163,15 +166,13 @@ function MyPosts() {
                 className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none"
                 value={newPost.skillLevel}
                 onChange={(e) => setNewPost({...newPost, skillLevel: e.target.value})}
-                required
               />
               <input
-                type="text"
+                type="date"
                 placeholder="Deadline"
                 className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none"
                 value={newPost.deadline}
                 onChange={(e) => setNewPost({...newPost, deadline: e.target.value})}
-                required
               />
               <input
                 type="text"
@@ -179,9 +180,7 @@ function MyPosts() {
                 className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none"
                 value={newPost.tags}
                 onChange={(e) => setNewPost({...newPost, tags: e.target.value})}
-                required
               />
-              
               <div className="flex gap-4">
                 <select
                   className="bg-black text-green-400 p-2 rounded border border-gray-800 focus:border-green-500 outline-none w-1/3"
@@ -234,12 +233,12 @@ function MyPosts() {
                 </div>
                 <p className="text-gray-400 text-sm mb-4">{post.description}</p>
                 <div className="flex items-center gap-4 text-sm text-gray-300 mb-4">
-                  <span>👥 {post.teamSize}</span>
-                  <span>🎯 {post.skillLevel}</span>
-                  <span>⏰ {post.deadline}</span>
+                  <span>👥 {post.teamSize || 'N/A'}</span>
+                  <span>🎯 {post.skillLevel || 'N/A'}</span>
+                  <span>⏰ {post.deadline ? new Date(post.deadline).toLocaleDateString() : 'N/A'}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag, i) => (
+                  {post.tags?.map((tag, i) => (
                     <span key={i} className="px-2 py-1 bg-green-500/5 text-green-400 text-xs rounded-md border border-green-900/50">
                       {tag}
                     </span>
@@ -251,7 +250,7 @@ function MyPosts() {
                       Contact via: <span className="text-green-400 capitalize">{post.contactMethod}</span>
                     </div>
                     <button
-                      onClick={() => window.open(`${getContactLink(post.contactMethod, post.contactInfo)}`)}
+                      onClick={() => window.open(getContactLink(post.contactMethod, post.contactInfo))}
                       className="bg-green-500 hover:bg-green-400 text-black px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                       Join Project
@@ -281,7 +280,6 @@ function MyPosts() {
   );
 }
 
-// Helper function to generate contact links
 const getContactLink = (method, info) => {
   switch (method) {
     case 'phone':
@@ -291,10 +289,10 @@ const getContactLink = (method, info) => {
     case 'whatsapp':
       return `https://wa.me/${info}`;
     case 'discord':
-      return `discord://${info}`;
+      return info.startsWith('https://') ? info : `https://discord.gg/${info}`;
     default:
       return '#';
   }
 };
 
-export default MyPosts
+export default MyPosts;

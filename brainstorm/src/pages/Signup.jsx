@@ -20,7 +20,7 @@ const SignUpPage = () => {
           <img
             src={assets.illustration}
             alt="Signup Illustration"
-            className="w-full max-w-md mx-auto drop-shadow-2xl"
+            className="w-full h-full max-w-md mx-auto drop-shadow-2xl"
           />
         </div>
       </div>
