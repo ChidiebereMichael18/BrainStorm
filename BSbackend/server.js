@@ -8,12 +8,8 @@ const app = express();
 const port = 5000
 
 // CORS configuration
-app.use(cors({
-    origin: 'http://localhost:5173', // Vite's default port
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
+
 
 app.use(express.json());
 app.use('/api/users', require('./routes/userRoutes'));
