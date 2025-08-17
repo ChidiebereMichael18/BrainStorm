@@ -1,7 +1,11 @@
 import axios from 'axios';
 
 const api = axios.create({
+<<<<<<< HEAD
     baseURL: 'https://localhost:5000',
+=======
+    baseURL: 'http://localhost:5000',
+>>>>>>> parent of fcfccaa (michael)
     headers: {
         'Content-Type': 'application/json'
     }
