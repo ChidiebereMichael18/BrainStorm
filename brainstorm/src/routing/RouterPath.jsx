@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import LandingPage from "../pages/LandingPage";
-import SignUpPage from "../pages/SignUp";
+import SignupPage from "../pages/Signup";
 import LoginPage from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import Layout from "../components/dashboard/Layout";
@@ -19,7 +19,7 @@ function RouterPath() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/landing" element={<LandingPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       {/* Dashboard Routes */}
       <Route path="/dashboard" element={<Layout />}>
