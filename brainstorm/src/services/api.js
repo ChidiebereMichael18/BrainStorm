@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://localhost:5000',
+    baseURL: 'https://brainstorm-r7xb.onrender.com',
     headers: {
         'Content-Type': 'application/json'
     }
@@ -22,9 +22,14 @@ export const authAPI = {
     // Login user and get token
     login: (credentials) => api.post('/api/users/login', credentials),
     // Get authenticated user's profile
-    getUser: (userId) => api.get(`/api/users/${userId}`),
+    getUser: () => api.get('/api/users/me'),
     // Update authenticated user's profile
-    updateUser: (userId, userData) => api.put(`/api/users/${userId}`, userData),
+    updateUser: (userData) => api.put('/api/users/me', userData),
+    // Logout user
+    logout: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+    }
 };
 
 export const postsAPI = {

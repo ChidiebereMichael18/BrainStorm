@@ -19,8 +19,9 @@ function Profile() {
           return;
         }
 
-        const response = await authAPI.getUser(userId); // Use 'me' endpoint instead of userId
+        const response = await authAPI.getUser();
         setUserProfile(response.data);
+        setLoading(false);
       } catch (err) {
         const errorMsg = err.response?.data?.message || 'Failed to fetch profile';
         setError(errorMsg);
@@ -29,8 +30,6 @@ function Profile() {
           localStorage.removeItem('token');
           navigate('/login');
         }
-      } finally {
-        setLoading(false);
       }
     };
 

@@ -5,7 +5,7 @@ const { registerUser, loginUser, getUser, updateUser } = require('../controllers
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.get('/:userId', protect, getUser);
-router.put('/:userId', protect, updateUser);
+router.get('/me', protect, getUser); // Add this route for getting current user
+router.put('/me', protect, updateUser); // Add this route for updating current user
 
 module.exports = router;

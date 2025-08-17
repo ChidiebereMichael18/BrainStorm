@@ -33,7 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '1d',
     });
 
     res.status(201).json({
@@ -70,7 +70,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '1d',
     });
 
     res.status(200).json({
@@ -87,34 +87,17 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const getUser = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+        res.status(200).json(user);
+    } catch (error) {
         res.status(400);
-        throw new Error('Invalid or missing userId');
+        throw new Error('Error fetching user profile');
     }
-
-    if (userId !== req.user.id) {
-        res.status(401);
-        throw new Error('Not authorized to access this user');
-    }
-
-    const user = await User.findById(userId).select('-password');
-    if (!user) {
-        res.status(404);
-        throw new Error('User not found');
-    }
-
-    res.status(200).json({
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        bio: user.bio,
-        skills: user.skills,
-        interests: user.interests,
-        stats: user.stats,
-    });
 });
 
 const updateUser = asyncHandler(async (req, res) => {
@@ -169,7 +152,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const updatedUser = await user.save();
 
     const token = jwt.sign({ id: updatedUser._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '1d',
     });
 
     res.status(200).json({

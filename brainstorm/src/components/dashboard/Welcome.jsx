@@ -8,10 +8,12 @@ function Welcome() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        if (!userId) return;
-
-        const response = await authAPI.getUser(userId);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+        const response = await authAPI.getUser();
         setUser(response.data);
       } catch (error) {
         console.error('Error fetching user:', error);
