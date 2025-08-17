@@ -13,23 +13,29 @@ function Profile() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-          throw new Error('User not authenticated');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
         }
-        console.log('Fetching profile for userId:', userId);
-        const response = await authAPI.getUser(userId);
+
+        const response = await authAPI.getUser(userId); // Use 'me' endpoint instead of userId
         setUserProfile(response.data);
-        setLoading(false);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch profile');
+        const errorMsg = err.response?.data?.message || 'Failed to fetch profile';
+        setError(errorMsg);
+        showToast.error(errorMsg);
+        if (err.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      } finally {
         setLoading(false);
-        showToast.error(err.response?.data?.message || 'Failed to fetch profile');
       }
     };
 
     fetchUserProfile();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return <div className="text-gray-400 text-center py-12">Loading...</div>;

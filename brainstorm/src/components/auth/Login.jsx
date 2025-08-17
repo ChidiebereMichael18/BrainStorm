@@ -21,11 +21,13 @@ function Login() {
     try {
       const response = await authAPI.login(form);
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('userId', response.data._id);
+      // Remove userId storage since we'll use the token to identify the user
       showToast.success('Successfully logged in!');
       navigate('/dashboard');
     } catch (err) {
-      showToast.error(err.response?.data?.message || 'Login failed');
+      const errorMsg = err.response?.data?.message || 'Login failed';
+      setError(errorMsg);
+      showToast.error(errorMsg);
     }
   };
 
