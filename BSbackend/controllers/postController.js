@@ -32,15 +32,6 @@ const createPost = asyncHandler(async (req, res) => {
     res.status(201).json(post);
 });
 
-// const getPostById = asyncHandler(async (req, res) => {
-//     const post = await Post.findById(req.params.id).populate('user', 'username');
-//     if (!post) {
-//         res.status(404);
-//         throw new Error('Post not found');
-//     }
-//     res.json(post);
-// });
-
 const getPostsByCategory = asyncHandler(async (req, res) => {
     const { category } = req.params;
     console.log('getPostsByCategory - category:', category);
@@ -59,11 +50,17 @@ const getPostsByTag = asyncHandler(async (req, res) => {
 
 const getPostsByUser = asyncHandler(async (req, res) => {
     const { userId } = req.params;
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    console.log('getPostsByUser - Request URL:', req.originalUrl);
+    console.log('getPostsByUser - userId:', userId, 'req.user.id:', req.userId);
+
+    let targetUserId = userId || req.user.id;
+
+    if (!targetUserId || !mongoose.Types.ObjectId.isValid(targetUserId)) {
         res.status(400);
         throw new Error('Invalid or missing userId');
     }
-    const posts = await Post.find({ user: userId }).populate('user', 'username');
+
+    const posts = await Post.find({ user: targetUserId }).populate('user', 'username');
     res.json(posts);
 });
 
@@ -108,7 +105,7 @@ const searchPosts = asyncHandler(async (req, res) => {
 
     const posts = await Post.find({
         $or: [
-            { title: { $regex: q, $options: 'i' } }, // Case-insensitive search
+            { title: { $regex: q, $options: 'i' } },
             { description: { $regex: q, $options: 'i' } },
             { tags: { $regex: q, $options: 'i' } }
         ]
@@ -120,7 +117,6 @@ const searchPosts = asyncHandler(async (req, res) => {
 module.exports = {
     getPosts,
     createPost,
-    // getPostById,
     getPostsByTag,
     getPostsByUser,
     updatePost,

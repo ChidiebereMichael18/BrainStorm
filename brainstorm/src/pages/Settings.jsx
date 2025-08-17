@@ -19,12 +19,8 @@ function Settings() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-          throw new Error('User not authenticated');
-        }
-        console.log('Fetching profile for userId:', userId);
-        const response = await authAPI.getUser(userId);
+        console.log('Fetching profile via /api/users/me');
+        const response = await authAPI.getUser();
         setForm({
           username: response.data.username || '',
           email: response.data.email || '',
@@ -35,10 +31,13 @@ function Settings() {
           password: '',
           confirmPassword: '',
         });
+        localStorage.setItem('userId', response.data._id); // Ensure userId for MyPosts
         setLoading(false);
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch profile');
-        showToast.error(err.response?.data?.message || 'Failed to fetch profile');
+        const errorMessage = err.response?.data?.message || 'Failed to fetch profile';
+        setError(errorMessage);
+        showToast.error(errorMessage);
+        console.error('Fetch profile error:', err.response?.data, err.message);
         setLoading(false);
       }
     };
@@ -51,46 +50,54 @@ function Settings() {
   };
 
   const handleSave = async e => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    if (form.password && form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
-      showToast.error('Passwords do not match');
-      return;
+  if (form.password && form.password !== form.confirmPassword) {
+    setError('Passwords do not match');
+    showToast.error('Passwords do not match');
+    return;
+  }
+
+  try {
+    const userData = {
+      username: form.username,
+      email: form.email,
+      name: form.name,
+      bio: form.bio,
+      skills: form.skills ? form.skills.split(',').map(skill => skill.trim()).filter(skill => skill) : [],
+      interests: form.interests ? form.interests.split(',').map(interest => interest.trim()).filter(interest => interest) : [],
+      ...(form.password && { password: form.password }),
+    };
+
+    console.log('Updating user via /api/users/me', JSON.stringify(userData, null, 2));
+    
+    const response = await authAPI.updateUser(userData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    console.log('Update response:', response.data);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userId', response.data.id);
+      showToast.success('Settings saved successfully!');
     }
-
-    try {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-
-      const userData = {
-        username: form.username,
-        email: form.email,
-        name: form.name,
-        bio: form.bio,
-        skills: form.skills ? form.skills.split(',').map(skill => skill.trim()).filter(skill => skill) : [],
-        interests: form.interests ? form.interests.split(',').map(interest => interest.trim()).filter(interest => interest) : [],
-      };
-
-      if (form.password) {
-        userData.password = form.password;
-      }
-
-      const response = await authAPI.updateUser(userId, userData);
-      
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        showToast.success('Settings saved successfully!');
-      }
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Failed to save settings';
-      setError(errorMessage);
-      showToast.error(errorMessage);
-    }
-  };
+  } catch (err) {
+    const errorMessage = err.response?.data?.message || 
+                        err.response?.data?.error || 
+                        `Failed to save settings: ${err.message}`;
+    setError(errorMessage);
+    showToast.error(errorMessage);
+    console.error('Update error:', {
+      status: err.response?.status,
+      data: err.response?.data,
+      message: err.message
+    });
+  }
+};
 
   if (loading) {
     return <div className="text-gray-400 text-center py-12">Loading...</div>;

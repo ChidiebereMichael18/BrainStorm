@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { postsAPI, authAPI } from '../services/api';
 import { showToast } from '../utils/toast';
+import { jwtDecode} from 'jwt-decode';
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -17,19 +18,39 @@ function MyPosts() {
     contactMethod: 'discord',
     contactInfo: ''
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const fetchPosts = async () => {
     try {
-      const userId = localStorage.getItem('userId'); // Get userId from localStorage
+      let userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      if (!userId && token) {
+        try {
+          const decoded = jwtDecode(token);
+          userId = decoded.id;
+          localStorage.setItem('userId', userId);
+          console.log('Extracted userId from token:', userId);
+        } catch (err) {
+          throw new Error('Invalid token');
+        }
+      }
+
       if (!userId) {
         throw new Error('User not authenticated');
       }
-      console.log('Fetching posts for userId:', userId); // Debug
+
+      console.log('Fetching posts for userId:', userId);
       const response = await postsAPI.getPostsByUser(userId);
       setPosts(response.data);
+      setLoading(false);
     } catch (err) {
-      console.error('Failed to fetch posts:', err);
-      showToast.error(err.response?.data?.message || 'Failed to fetch posts');
+      const errorMessage = err.response?.data?.message || `Failed to fetch posts: ${err.message}`;
+      setError(errorMessage);
+      showToast.error(errorMessage);
+      console.error('Fetch posts error:', err.response?.data, err.message);
+      setLoading(false);
     }
   };
 
@@ -99,6 +120,9 @@ function MyPosts() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  if (loading) return <div className="text-gray-400 text-center py-12">Loading...</div>;
+  if (error) return <div className="text-red-400 text-center py-12">{error}</div>;
 
   const formTitle = editingPost ? 'Edit Post' : 'Create New Post';
   const buttonText = editingPost ? 'Update Post' : 'Create Post';

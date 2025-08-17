@@ -16,7 +16,7 @@ const { protect } = require('../middleware/authMiddleware');
 router.get('/', getPosts);
 router.post('/create', protect, createPost);
 router.get('/tag/:tag', getPostsByTag);
-router.get('/user/:userId', getPostsByUser);
+router.get('/user/:userId',  getPostsByUser);
 // router.get('/:id', getPostById);
 router.put('/:id', protect, updatePost);
 router.delete('/:id', protect, deletePost);
